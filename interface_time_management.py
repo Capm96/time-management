@@ -88,13 +88,22 @@ def print_contents(facade):
 def complete_task(facade):
     clear_screen()
     print("0 to cancel\n")
-    row_id = input("Select note id for completion: ")
-    if row_id == "0":
+    task_id = input("Select task id for completion: ")
+    if task_id == "0":
         clear_screen()
         run_menu_loop_tm(facade)
-    else:
-        facade.update_completion(row_id)
+    elif task_id_is_valid(task_id, facade.get_all_ids()):
+        facade.update_completion(task_id)
         clear_screen()
+    else: 
+        print("\nCould not find task with given id. Please choose another.")
+
+
+def task_id_is_valid(task_id, ids):
+    if task_id.isdigit():
+        return int(task_id) in ids
+    else:
+        return False
 
 
 def print_overdue_tasks(facade):
