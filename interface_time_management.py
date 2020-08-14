@@ -85,10 +85,14 @@ def print_contents(facade):
         print("\n\n")
 
 
-def complete_task(facade):
+def complete_task(facade, first_run=True):
     clear_screen()
     print("0 to cancel\n")
-    task_id = input("Select task id for completion: ")
+    if first_run:
+        task_id = input("Select task id for completion: ")
+    else:
+        task_id = input("Task id not found. Please choose another: ")
+
     if task_id == "0":
         clear_screen()
         run_menu_loop_tm(facade)
@@ -96,7 +100,7 @@ def complete_task(facade):
         facade.update_completion(task_id)
         clear_screen()
     else: 
-        print("\nCould not find task with given id. Please choose another.")
+        complete_task(facade, False)
 
 
 def task_id_is_valid(task_id, ids):
