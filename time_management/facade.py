@@ -4,7 +4,6 @@ import kronos
 
 class DatabaseFacade:
     rows_in_table = 0
-    database_name = "time_management.db"
     table_name = "time_management"
     schema = {
         "id": "id",
@@ -14,8 +13,9 @@ class DatabaseFacade:
         "is_complete": "is_complete",
     }
 
-    def __init__(self):
+    def __init__(self, name=":memory:"):
         try:
+            self.database_name = name
             self.connection = sqlite3.connect(self.database_name)
             self.cursor = self.connection.cursor()
             self.create_table()
@@ -76,6 +76,12 @@ class DatabaseFacade:
             rows.append(item)
         return rows
 
+    def get_all_ids(self):
+        ids = []
+        for id in self.cursor.execute("SELECT id FROM {}".format(self.table_name)):
+            ids.append(id[0])
+        return ids
+
     def get_overdue_items(self):
         rows = []
         for row in self.cursor.execute("SELECT * FROM {}".format(self.table_name)):
@@ -85,15 +91,11 @@ class DatabaseFacade:
                     rows.append(item)
         return rows
 
-    # TODO :: HANDLE MONDAY
     def get_last_days_items(self):
         rows = []
         for row in self.cursor.execute("SELECT * FROM {}".format(self.table_name)):
             if kronos.get_day_of_week(kronos.get_date_time()) == "Monday":
-                if (
-                    kronos.get_day_of_week(kronos.get_date_time_from_string(row[1]))
-                    == "Friday"
-                ):
+                if kronos.is_previous_friday(row[1]):
                     item = self.__format_row(row)
                     rows.append(item)
             if kronos.is_yesterday(row[1]):

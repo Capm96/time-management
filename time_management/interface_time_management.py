@@ -8,7 +8,7 @@ from interface_common import (
 
 
 def prompt_time_management():
-    print_ascii_banner(parse_ascii_banner("banners/tm.txt"))
+    print_ascii_banner(parse_ascii_banner("time_management/banners/tm.txt"))
     return input(
         """0: Return to mode menu
 1: Make a note
@@ -85,16 +85,29 @@ def print_contents(facade):
         print("\n\n")
 
 
-def complete_task(facade):
+def complete_task(facade, first_run=True):
     clear_screen()
     print("0 to cancel\n")
-    row_id = input("Select note id for completion: ")
-    if row_id == "0":
+    if first_run:
+        task_id = input("Select task id for completion: ")
+    else:
+        task_id = input("Task id not found. Please choose another: ")
+
+    if task_id == "0":
         clear_screen()
         run_menu_loop_tm(facade)
-    else:
-        facade.update_completion(row_id)
+    elif task_id_is_valid(task_id, facade.get_all_ids()):
+        facade.update_completion(task_id)
         clear_screen()
+    else:
+        complete_task(facade, False)
+
+
+def task_id_is_valid(task_id, ids):
+    if task_id.isdigit():
+        return int(task_id) in ids
+    else:
+        return False
 
 
 def print_overdue_tasks(facade):
@@ -106,7 +119,7 @@ def print_overdue_tasks(facade):
 
 def print_scrum_notes(facade):
     clear_screen()
-    print_ascii_banner(parse_ascii_banner("banners/scrum.txt"))
+    print_ascii_banner(parse_ascii_banner("time_management/banners/scrum.txt"))
     table_rows = facade.get_last_days_items()
     for row in table_rows:
         print(row)

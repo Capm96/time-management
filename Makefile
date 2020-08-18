@@ -21,11 +21,17 @@ clean:
 
 .PHONY: test
 test:
-	python -m unittest discover . "*_test.py"
+	python -m unittest discover time_management "*_test.py"
+
+.PHONY: coverage
+coverage:
+	coverage run -m --source=./time_management/ unittest discover time_management "*_test.py"
+	coverage report
+	coverage html
 
 .PHONY: run
 run:
-	python3 main.py
+	python3 time_management/main.py
 
 .PHONY: remove
 remove:
